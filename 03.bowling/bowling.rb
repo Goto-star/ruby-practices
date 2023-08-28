@@ -4,9 +4,7 @@
 score = ARGV[0]
 scores = score.split(',')
 shots = []
-count = 0
 scores.each do |s|
-  count += 1
   if s == 'X'
     shots << 10
     shots << 0
