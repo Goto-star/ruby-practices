@@ -8,7 +8,6 @@ SPLIT_NUMBER = 3
 def main
   options = ARGV.getopts('a')
   files = obtain_files(params: options['a'])
-
   display_files(files)
 end
 
