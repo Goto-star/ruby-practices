@@ -7,11 +7,11 @@ SPLIT_NUMBER = 3
 
 def main
   options = ARGV.getopts('a')
-  files = obtain_files(params: options['a'])
+  files = get_files(params: options['a'])
   display_files(files)
 end
 
-def obtain_files(params)
+def get_files(params)
   if params.values == [true]
     Dir.glob('*', File::FNM_DOTMATCH)
   else
