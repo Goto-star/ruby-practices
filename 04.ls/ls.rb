@@ -12,7 +12,7 @@ def main
 end
 
 def get_files(params)
-  if params == true
+  if params
     Dir.glob('*', File::FNM_DOTMATCH)
   else
     Dir.glob('*')
