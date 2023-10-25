@@ -27,8 +27,8 @@ def display_files(files)
 
   vertical_files = grouped_files.transpose
   max_name_length = files.map(&:size).max
-  vertical_files.each do |files|
-    files.each do |file|
+  vertical_files.each do |line|
+    line.each do |file|
       print file.to_s.ljust(max_name_length + 1)
     end
     print("\n")
