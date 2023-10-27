@@ -25,10 +25,10 @@ def display_files(files)
   blank_numbers = grouped_files[0].length - grouped_files[-1].length
   grouped_files[-1] += Array.new(blank_numbers, nil)
 
-  vertical_files = grouped_files.transpose
+  file_table = grouped_files.transpose
   max_name_length = files.map(&:size).max
-  vertical_files.each do |line|
-    line.each do |file|
+  file_table.each do |row_files|
+    row_files.each do |file|
       print file.to_s.ljust(max_name_length + 1)
     end
     print("\n")
