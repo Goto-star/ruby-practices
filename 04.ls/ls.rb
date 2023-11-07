@@ -21,9 +21,9 @@ def display_files(files)
   blank_numbers = grouped_files[0].length - grouped_files[-1].length
   grouped_files[-1] += Array.new(blank_numbers, nil)
 
-  files_table = grouped_files.transpose
+  file_table = grouped_files.transpose
   max_name_length = files.map(&:size).max
-  files_table.each do |row_files|
+  file_table.each do |row_files|
     row_files.each do |file|
       print file.to_s.ljust(max_name_length + 1)
     end
