@@ -8,8 +8,8 @@ SPLIT_NUMBER = 3
 def main
   options = ARGV.getopts('r')
   files = Dir.glob('*')
-  reverse_order_files = files.reverse if options['r']
-  display_files(reverse_order_files || files)
+  sorted_files = options['r'] ? files.reverse : files
+  display_files(sorted_files)
 end
 
 def display_files(files)
