@@ -6,17 +6,10 @@ require 'optparse'
 SPLIT_NUMBER = 3
 
 def main
-  options = ARGV.getopts('a')
-  files = fetch_files(options['a'])
-  display_files(files)
-end
-
-def fetch_files(params)
-  if params
-    Dir.glob('*', File::FNM_DOTMATCH)
-  else
-    Dir.glob('*')
-  end
+  options = ARGV.getopts('r')
+  files = Dir.glob('*')
+  sorted_files = options['r'] ? files.reverse : files
+  display_files(sorted_files)
 end
 
 def display_files(files)
