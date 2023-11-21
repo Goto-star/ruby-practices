@@ -34,7 +34,7 @@ def main
 end
 
 def display_long_format(files)
-  long_formats = gain_long_format(files)
+  long_formats = build_detailed_files(files)
   total_block_number = calc_total_block_number(long_formats)
   max_width = calc_max_width(long_formats)
 
@@ -50,7 +50,7 @@ def display_long_format(files)
   end
 end
 
-def gain_long_format(files)
+def build_detailed_files(files)
   files.map do |file|
     file_info = File.stat(file)
     {
@@ -67,7 +67,7 @@ def gain_long_format(files)
 end
 
 def calc_total_block_number(long_formats)
-  block_long_formats = long_formats.map { |long_format| long_format.fetch(:block) }
+  block_long_formats = long_formats.map { |long_format| long_format[:block] }
   block_long_formats.sum
 end
 
@@ -81,17 +81,16 @@ def calc_max_width(long_formats)
 end
 
 def fetch_file_mode(file_info)
-  file_mode_of_numeric = file_info.mode.to_s(8)
-  file_mode_symbolic = convert_file_mode(file_mode_of_numeric.slice(3, 3))
-  file_type_of_symboric = FILE_TYPE[file_mode_of_numeric.slice(0, 2)]
-  "#{file_type_of_symboric}#{file_mode_symbolic}"
+  numerical_file_mode = file_info.mode.to_s(8)
+  symbolic_file_mode = convert_file_mode(numerical_file_mode.slice(3, 3)).join
+  symbolic_file_type = FILE_TYPE[numerical_file_mode.slice(0, 2)]
+  "#{symbolic_file_type}#{symbolic_file_mode}"
 end
 
 def convert_file_mode(file_mode_numbers)
   file_mode_numbers.chars.map do |number|
-    file_mode_numbers[number] = FILE_MODE[number]
+    FILE_MODE[number]
   end
-  file_mode_numbers
 end
 
 def display_files(files)
