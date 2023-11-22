@@ -17,7 +17,7 @@ FILE_TYPE = {
   '14' => 's'
 }.freeze
 
-FILE_MODE = {
+FILE_PERMISSION = {
   '0' => '---',
   '1' => '--x',
   '3' => '-w-',
@@ -30,67 +30,65 @@ FILE_MODE = {
 def main
   options = ARGV.getopts('l')
   files = Dir.glob('*')
-  options['l'] ? display_long_format(files) : display_files(files)
+  options['l'] ? display_detailed_files(files) : display_files(files)
 end
 
-def display_long_format(files)
-  long_formats = build_detailed_files(files)
-  total_block_number = calc_total_block_number(long_formats)
-  max_width = calc_max_width(long_formats)
+def display_detailed_files(files)
+  detailed_files = build_detailed_files(files)
+  block_total = calc_block_total(detailed_files)
+  puts "total #{block_total}"
 
-  puts "total #{total_block_number}"
-  long_formats.each do |format|
-    print "#{format[:file_mode]}  "
-    print "#{format[:hard_links_count].to_s.rjust(max_width[:link])} "
-    print "#{format[:owner].ljust(max_width[:owner])}  "
-    print "#{format[:group].ljust(max_width[:group])}  "
-    print "#{format[:file_size].to_s.rjust(max_width[:file_size])} "
-    print "#{format[:day_time]} "
-    print "#{format[:file_name]}\n"
+  max_width = calc_max_width(detailed_files)
+  detailed_files.each do |detailed_file|
+    print "#{detailed_file[:file_mode]}  "
+    print "#{detailed_file[:hard_links_count].to_s.rjust(max_width[:link])} "
+    print "#{detailed_file[:owner].ljust(max_width[:owner])}  "
+    print "#{detailed_file[:group].ljust(max_width[:group])}  "
+    print "#{detailed_file[:file_size].to_s.rjust(max_width[:file_size])} "
+    print "#{detailed_file[:day_time]} "
+    print "#{detailed_file[:file_name]}\n"
   end
 end
 
 def build_detailed_files(files)
   files.map do |file|
-    file_info = File.stat(file)
+    file_stat = File.stat(file)
     {
-      block: file_info.blocks,
-      file_mode: fetch_file_mode(file_info),
-      hard_links_count: file_info.nlink,
-      owner: Etc.getpwuid(file_info.uid).name,
-      group: Etc.getgrgid(file_info.gid).name,
-      file_size: file_info.size,
-      day_time: file_info.mtime.strftime('%_m %_d %H:%M'),
+      block: file_stat.blocks,
+      file_mode: symbolize_file_mode(file_stat),
+      hard_links_count: file_stat.nlink,
+      owner: Etc.getpwuid(file_stat.uid).name,
+      group: Etc.getgrgid(file_stat.gid).name,
+      file_size: file_stat.size,
+      day_time: file_stat.mtime.strftime('%_m %_d %H:%M'),
       file_name: File.basename(file)
     }
   end
 end
 
-def calc_total_block_number(long_formats)
-  block_long_formats = long_formats.map { |long_format| long_format[:block] }
-  block_long_formats.sum
+def calc_block_total(detailed_files)
+  block_detailed_files = detailed_files.map { |detailed_file| detailed_file[:block] }
+  block_detailed_files.sum
 end
 
-def calc_max_width(long_formats)
+def calc_max_width(detailed_files)
   {
-    link: long_formats.map { |long_format| long_format[:hard_links_count].to_s.size }.max,
-    owner: long_formats.map { |long_format| long_format[:owner].size }.max,
-    group: long_formats.map { |long_format| long_format[:group].size }.max,
-    file_size: long_formats.map { |long_format| long_format[:file_size].to_s.size }.max
+    link: detailed_files.map { |detailed_file| detailed_file[:hard_links_count].to_s.size }.max,
+    owner: detailed_files.map { |detailed_file| detailed_file[:owner].size }.max,
+    group: detailed_files.map { |detailed_file| detailed_file[:group].size }.max,
+    file_size: detailed_files.map { |detailed_file| detailed_file[:file_size].to_s.size }.max
   }
 end
 
-def fetch_file_mode(file_info)
-  numerical_file_mode = file_info.mode.to_s(8)
-  symbolic_file_mode = convert_file_mode(numerical_file_mode.slice(3, 3)).join
+def symbolize_file_mode(file_stat)
+  numerical_file_mode = file_stat.mode.to_s(8)
+  symbolic_file_permission = convert_file_permission(numerical_file_mode.slice(3, 3))
   symbolic_file_type = FILE_TYPE[numerical_file_mode.slice(0, 2)]
-  "#{symbolic_file_type}#{symbolic_file_mode}"
+  "#{symbolic_file_type}#{symbolic_file_permission}"
 end
 
-def convert_file_mode(file_mode_numbers)
-  file_mode_numbers.chars.map do |number|
-    FILE_MODE[number]
-  end
+def convert_file_permission(file_mode_numbers)
+  file_mode_numbers.gsub(/./, FILE_PERMISSION)
 end
 
 def display_files(files)
