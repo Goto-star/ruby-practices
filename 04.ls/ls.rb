@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'etc'
-
 require 'optparse'
 
 SPLIT_NUMBER = 3
@@ -28,9 +27,10 @@ FILE_PERMISSION = {
 }.freeze
 
 def main
-  options = ARGV.getopts('l')
-  files = Dir.glob('*')
-  options['l'] ? display_detailed_files(files) : display_files(files)
+  options = ARGV.getopts('arl')
+  files = options['a'] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+  sorted_files = options['r'] ? files.reverse : files
+  options['l'] ? display_detailed_files(sorted_files) : display_files(sorted_files)
 end
 
 def display_detailed_files(files)
@@ -67,8 +67,7 @@ def build_detailed_files(files)
 end
 
 def calc_block_total(detailed_files)
-  block_detailed_files = detailed_files.map { |detailed_file| detailed_file[:block] }
-  block_detailed_files.sum
+  detailed_files.sum { |detailed_file| detailed_file[:block] }
 end
 
 def calc_max_width(detailed_files)
@@ -81,7 +80,7 @@ def calc_max_width(detailed_files)
 end
 
 def symbolize_file_mode(file_stat)
-  numerical_file_mode = file_stat.mode.to_s(8)
+  numerical_file_mode = file_stat.mode.to_s(8).rjust(6, '0')
   symbolic_file_permission = convert_file_permission(numerical_file_mode.slice(3, 3))
   symbolic_file_type = FILE_TYPE[numerical_file_mode.slice(0, 2)]
   "#{symbolic_file_type}#{symbolic_file_permission}"
