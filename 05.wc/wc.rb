@@ -14,11 +14,11 @@ def main
 end
 
 def display_standard_input(loaded_files, options, all_option_values)
-  loaded_files = build_standard_input_attribute(loaded_files)
+  stdin_row = build_standard_input_attribute(loaded_files)
 
-  print loaded_files[:line_number].to_s.rjust(8) if options['l'] || all_option_values
-  print loaded_files[:word_number].to_s.rjust(8) if options['w'] || all_option_values
-  print loaded_files[:byte_number].to_s.rjust(8) if options['c'] || all_option_values
+  print stdin_row[:line_number].to_s.rjust(8) if options['l'] || all_option_values
+  print stdin_row[:word_number].to_s.rjust(8) if options['w'] || all_option_values
+  print stdin_row[:byte_number].to_s.rjust(8) if options['c'] || all_option_values
   print "\n"
 end
 
