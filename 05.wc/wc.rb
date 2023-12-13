@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'debug'
 require 'optparse'
 
 # メインの処理
@@ -14,58 +13,47 @@ def main
 end
 
 def display_standard_input(loaded_files, options, all_option_values)
-  stdin_row = build_standard_input_attribute(loaded_files)
+  stdin_row = build_file_count(loaded_files)
 
-  print stdin_row[:line_number].to_s.rjust(8) if options['l'] || all_option_values
-  print stdin_row[:word_number].to_s.rjust(8) if options['w'] || all_option_values
-  print stdin_row[:byte_number].to_s.rjust(8) if options['c'] || all_option_values
-  print "\n"
+  display_file_count(stdin_row, options, all_option_values)
 end
 
 def display_word_count(files, options, all_option_values)
-  wc_rows = build_word_count_attribute(files)
+  wc_rows = files.map { |file| build_file_count(File.read(file), file_name: file) }
+  wc_rows << calc_total_count(wc_rows) if files.count > 1
 
   wc_rows.each do |wc_row|
-    print wc_row[:line_number].to_s.rjust(8) if options['l'] || all_option_values
-    print wc_row[:word_number].to_s.rjust(8) if options['w'] || all_option_values
-    print wc_row[:byte_number].to_s.rjust(8) if options['c'] || all_option_values
-    print " #{wc_row[:name]}\n"
+    display_file_count(wc_row, options, all_option_values)
   end
+end
+
+def display_file_count(row, options, all_option_values)
+  file_counts = []
+  file_counts << row[:line_count].to_s.rjust(8) if options['l'] || all_option_values
+  file_counts << row[:word_count].to_s.rjust(8) if options['w'] || all_option_values
+  file_counts << row[:byte_count].to_s.rjust(8) if options['c'] || all_option_values
+  file_counts << " #{row[:name]}" unless row[:name].empty?
+  puts file_counts.join
 end
 
 def all_false_values?(options)
-  options.values.all? { |value| value == false }
+  options.values.none?
 end
 
-def build_word_count_attribute(files)
-  wc_array = []
-
-  files.each do |file|
-    wc_array << {
-      line_number: File.read(file).count("\n"),
-      word_number: File.read(file).split(/\s+/).size,
-      byte_number: File.read(file).bytesize,
-      name: File.basename(file)
-    }
-  end
-  wc_array << calc_total_number(wc_array) if files.count > 1
-
-  wc_array
-end
-
-def build_standard_input_attribute(loaded_files)
+def build_file_count(file, file_name: '')
   {
-    line_number: loaded_files.scan(/\n/).size,
-    word_number: loaded_files.scan(/\s+/).size,
-    byte_number: loaded_files.bytesize
+    line_count: file.scan(/\n/).size,
+    word_count: file.scan(/\s+/).size,
+    byte_count: file.bytesize,
+    name: file_name
   }
 end
 
-def calc_total_number(files)
+def calc_total_count(files)
   {
-    line_number: files.select.sum { |file| file[:line_number] },
-    word_number: files.select.sum { |file| file[:word_number] },
-    byte_number: files.select.sum { |file| file[:byte_number] },
+    line_count: files.select.sum { |file| file[:line_count] },
+    word_count: files.select.sum { |file| file[:word_count] },
+    byte_count: files.select.sum { |file| file[:byte_count] },
     name: 'total'
   }
 end
