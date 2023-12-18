@@ -7,9 +7,17 @@ def main
   options = ARGV.getopts('lwc')
   specified_files = ARGV
   loaded_files = $stdin.read
-  all_option_values = all_false_values?(options)
+  all_option_values = all_falsy?(options)
 
-  loaded_files.empty? ? display_word_count(specified_files, options, all_option_values) : display_standard_input(loaded_files, options, all_option_values)
+  branch_file_processiong(loaded_files, specified_files, options, all_option_values)
+end
+
+def branch_file_processiong(loaded_files, specified_files, options, all_option_values)
+  if loaded_files.empty? || (!loaded_files.empty? && !specified_files.empty?)
+    display_word_count(specified_files, options, all_option_values)
+  else
+    display_standard_input(loaded_files, options, all_option_values)
+  end
 end
 
 def display_standard_input(loaded_files, options, all_option_values)
@@ -36,7 +44,7 @@ def display_file_count(row, options, all_option_values)
   puts file_counts.join
 end
 
-def all_false_values?(options)
+def all_falsy?(options)
   options.values.none?
 end
 
