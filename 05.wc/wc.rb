@@ -9,10 +9,10 @@ def main
   loaded_files = $stdin.read
   all_option_values = all_falsy?(options)
 
-  branch_file_processiong(loaded_files, specified_files, options, all_option_values)
+  display_by_specified_files_and_options(loaded_files, specified_files, options, all_option_values)
 end
 
-def branch_file_processiong(loaded_files, specified_files, options, all_option_values)
+def display_by_specified_files_and_options(loaded_files, specified_files, options, all_option_values)
   if loaded_files.empty? || (!loaded_files.empty? && !specified_files.empty?)
     display_word_count(specified_files, options, all_option_values)
   else
