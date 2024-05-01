@@ -7,8 +7,10 @@ class Shot
     @pin = convert_marks_to_pins(mark)
   end
 
+  private
+
   def convert_marks_to_pins(mark)
-    return [10, 0] if mark == 'X'
+    return 10 if mark == 'X'
 
     mark.to_i
   end
