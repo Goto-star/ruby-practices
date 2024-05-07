@@ -10,8 +10,7 @@ class Game
 
   def score
     @frames.each_with_index.sum do |frame, index|
-      total_score = 0
-      total_score += frame.score(@frames, frame, index)
+      total_score = frame.score(@frames, frame, index)
       total_score
     end
   end
