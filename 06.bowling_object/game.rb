@@ -9,29 +9,25 @@ class Game
   end
 
   def score
-    Frame.score(@frames)
+    @frames.each_with_index.sum do |frame, index|
+      total_score = 0
+      total_score += frame.score(@frames, frame, index)
+      total_score
+    end
   end
 
   private
 
   def create_frames(marks)
-    shots = marks.flatten.map { |mark| Shot.new(mark) }
-    frames = []
-    i = 0
-
-    while i < shots.length
-      if shots[i].pin == 10
-        frames << Frame.new(shots[i])
-        i += 1
-      elsif i + 1 < shots.length
-        frames << Frame.new(shots[i], shots[i + 1])
-        i += 2
-      else
-        frames << Frame.new(shots[i])
-        i += 1
-      end
+    flat_marks = marks.flatten
+    shots = []
+    flat_marks.each do |mark|
+      shots << Shot.new(mark)
+      shots << Shot.new('0') if mark == 'X'
     end
 
+    frames = []
+    shots.each_slice(2).map { |shot_group| frames << Frame.new(shot_group) }
     frames
   end
 end
