@@ -5,44 +5,43 @@ class Frame
 
   def initialize(shot_group)
     @shots = shot_group
+    @frame_shots = @shots.map(&:pin)
   end
 
-  def score(frames, frame, index)
-    frame_shots = frame.shots.map(&:pin)
-    frame_score = 0
-    frame_score += frame_shots.sum
+  def score(frames, index)
+    frame_score = @frame_shots.sum
     if index < 9
-      if strike?(frame_shots)
+      if strike?
         frame_score += calc_strike_bonus(frames, index)
-      elsif spare?(frame_shots)
+      elsif spare?
         frame_score += calc_spare_bonus(frames, index)
       end
     end
     frame_score
   end
 
+  def strike?
+    @frame_shots.first == 10
+  end
+
+  def spare?
+    @frame_shots.size == 2 && @frame_shots.sum == 10
+  end
+
   private
 
-  def strike?(frame_shots)
-    frame_shots.first == 10
-  end
-
-  def spare?(frame_shots)
-    frame_shots.size == 2 && frame_shots.sum == 10
-  end
-
   def calc_strike_bonus(frames, index)
-    strike_bonus = 0
-    strike_bonus += frames[index + 1].shots.map(&:pin)[0]
-    strike_bonus += if frames[index + 1].shots.map(&:pin)[0] == 10
-                      frames[index + 2].shots.map(&:pin)[0]
+    bonus_scores = []
+    bonus_scores << frames[index + 1].shots[0]
+    bonus_scores << if frames[index + 1].shots[0].pin == 10
+                      frames[index + 2].shots[0]
                     else
-                      frames[index + 1].shots.map(&:pin)[1]
+                      frames[index + 1].shots[1]
                     end
-    strike_bonus
+    bonus_scores.map(&:pin).sum
   end
 
   def calc_spare_bonus(frames, index)
-    frames[index + 1].shots.map(&:pin)[0]
+    frames[index + 1].shots[0].pin
   end
 end

@@ -10,8 +10,7 @@ class Game
 
   def score
     @frames.each_with_index.sum do |frame, index|
-      total_score = frame.score(@frames, frame, index)
-      total_score
+      frame.score(@frames, index)
     end
   end
 
@@ -25,8 +24,6 @@ class Game
       shots << Shot.new('0') if mark == 'X'
     end
 
-    frames = []
-    shots.each_slice(2).map { |shot_group| frames << Frame.new(shot_group) }
-    frames
+    shots.each_slice(2).map { |shot_group| Frame.new(shot_group) }
   end
 end
