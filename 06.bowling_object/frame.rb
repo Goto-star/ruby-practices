@@ -8,7 +8,7 @@ class Frame
   end
 
   def score(frames, index)
-    frame_score = @frame_shots.sum
+    frame_score = @shots.map(&:pin).sum
     if index < 9
       if strike?
         frame_score += calc_strike_bonus(frames, index)
