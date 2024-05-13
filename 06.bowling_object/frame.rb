@@ -5,11 +5,10 @@ class Frame
 
   def initialize(shot_group)
     @shots = shot_group
-    @frame_shots = @shots.map(&:pin)
   end
 
   def score(frames, index)
-    frame_score = @frame_shots.sum
+    frame_score = @shots.map(&:pin).sum
     if index < 9
       if strike?
         frame_score += calc_strike_bonus(frames, index)
@@ -21,11 +20,11 @@ class Frame
   end
 
   def strike?
-    @frame_shots.first == 10
+    @shots.map(&:pin).first == 10
   end
 
   def spare?
-    @frame_shots.size == 2 && @frame_shots.sum == 10
+    @shots.map(&:pin).size == 2 && @shots.map(&:pin).sum == 10
   end
 
   private
