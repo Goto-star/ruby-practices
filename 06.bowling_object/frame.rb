@@ -20,11 +20,11 @@ class Frame
   end
 
   def strike?
-    @shots.map(&:pin).first == 10
+    @shots.first.pin == 10
   end
 
   def spare?
-    @shots.map(&:pin).size == 2 && @shots.map(&:pin).sum == 10
+    @shots.size == 2 && @shots.map(&:pin).sum == 10
   end
 
   private
