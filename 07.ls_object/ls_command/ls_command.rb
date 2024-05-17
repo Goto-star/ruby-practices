@@ -4,7 +4,6 @@ require_relative 'simple_file'
 require_relative 'detailed_file'
 
 class LsCommand
-  attr_reader :options
   def initialize(options)
     @options = options
   end
